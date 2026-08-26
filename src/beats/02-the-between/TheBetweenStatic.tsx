@@ -1,63 +1,68 @@
 import { useEffect, useRef } from 'react';
 
 import type { BeatComponentProps } from '../../core/orchestrator/beat';
-import { envelopeAt } from './config';
-import { ThesisText } from './ThesisText';
+import { stateAt, toCss } from './config';
+import { PresenceNames } from './PresenceNames';
 
 /**
- * Static tier — the same beat with no WebGL at all.
+ * Static tier — the same trajectories, without WebGL.
  *
- * It is not a placeholder. Two presences still approach and stop, gold still appears
- * only between them and only once they are close, the thesis is the same text on the
- * same timing, and the bond still resolves in a single off-centre flash. What is lost
- * is the phenomenon: no fluid turbulence in Saba, and the bond is a flash rather than
- * two tangential arcs. Only composited properties are written, so this path also
- * carries devices that could not survive the shader.
+ * Two point-lights still travel their authored paths. The bond is a thin
+ * incomplete ellipse rather than a sampled loop. Gold is a single glint.
  */
 export function TheBetweenStatic({ timeline }: BeatComponentProps) {
   const parsa = useRef<HTMLDivElement>(null);
   const saba = useRef<HTMLDivElement>(null);
-  const aura = useRef<HTMLDivElement>(null);
-  const seam = useRef<HTMLDivElement>(null);
   const bond = useRef<HTMLDivElement>(null);
+  const glint = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const elements = {
-      parsa: parsa.current,
-      saba: saba.current,
-      aura: aura.current,
-      seam: seam.current,
-      bond: bond.current,
-    };
-    if (Object.values(elements).some((element) => !element)) return;
+    const p = parsa.current;
+    const s = saba.current;
+    const b = bond.current;
+    const g = glint.current;
+    if (!p || !s || !b || !g) return;
 
-    return timeline.subscribe(({ progress }) => {
-      const envelope = envelopeAt(progress);
-      const travel = envelope.approach * 24;
+    return timeline.subscribe(({ progress, awakened }) => {
+      if (!awakened) {
+        p.style.opacity = '0';
+        s.style.opacity = '0';
+        b.style.opacity = '0';
+        g.style.opacity = '0';
+        return;
+      }
 
-      elements.parsa!.style.transform = `translate3d(0, ${travel.toFixed(2)}%, 0)`;
-      elements.parsa!.style.opacity = (envelope.fade * envelope.presence).toFixed(3);
+      const state = stateAt(progress);
+      const parsaCss = toCss(state.parsa.pos);
+      const sabaCss = toCss(state.saba.pos);
+      const goldCss = toCss(state.goldPos);
 
-      elements.saba!.style.transform = `translate3d(0, ${(-travel).toFixed(2)}%, 0)`;
-      elements.saba!.style.opacity = (envelope.fade * envelope.presence).toFixed(3);
+      p.style.left = parsaCss.left;
+      p.style.top = parsaCss.top;
+      p.style.opacity = (state.fade * state.parsa.bright).toFixed(3);
+      p.style.transform = `translate(-50%, -50%) scale(${(0.55 + state.parsa.size * 28).toFixed(3)})`;
 
-      elements.aura!.style.opacity = (envelope.goldAura * envelope.fade * 0.3).toFixed(3);
-      elements.seam!.style.opacity = (envelope.goldSeam * envelope.fade * 0.85).toFixed(3);
-      elements.seam!.style.transform = `scaleX(${(0.35 + 0.65 * envelope.goldSeam).toFixed(3)})`;
-      elements.bond!.style.opacity = (envelope.flash * envelope.fade).toFixed(3);
+      s.style.left = sabaCss.left;
+      s.style.top = sabaCss.top;
+      s.style.opacity = (state.fade * state.saba.bright).toFixed(3);
+      s.style.transform = `translate(-50%, -50%) scale(${(0.55 + state.saba.size * 28).toFixed(3)})`;
+
+      b.style.opacity = (state.bondLen > 2 ? state.fade * 0.45 : 0).toFixed(3);
+      g.style.left = goldCss.left;
+      g.style.top = goldCss.top;
+      g.style.opacity = (state.gold * state.fade).toFixed(3);
     });
   }, [timeline]);
 
   return (
     <div className="between between--static">
       <div className="static-field" aria-hidden="true">
-        <div className="static-presence static-presence--parsa" ref={parsa} />
-        <div className="static-presence static-presence--saba" ref={saba} />
-        <div className="static-aura" ref={aura} />
-        <div className="static-seam" ref={seam} />
-        <div className="static-bond" ref={bond} />
+        <div className="static-bond-orbit" ref={bond} />
+        <div className="static-point static-point--parsa" ref={parsa} />
+        <div className="static-point static-point--saba" ref={saba} />
+        <div className="static-glint" ref={glint} />
       </div>
-      <ThesisText timeline={timeline} />
+      <PresenceNames timeline={timeline} />
     </div>
   );
 }

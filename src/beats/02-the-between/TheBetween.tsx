@@ -3,13 +3,12 @@ import { useEffect, useRef, useState } from 'react';
 import type { BeatComponentProps } from '../../core/orchestrator/beat';
 import { asVec3, palette } from '../../core/tokens/tokens';
 import { createFullscreenRenderer } from '../../webgl/core/fullscreenRenderer';
-import { HALF_GAP_FAR, HALF_GAP_NEAR, envelopeAt } from './config';
+import { stateAt } from './config';
+import { PresenceNames } from './PresenceNames';
 import { TheBetweenStatic } from './TheBetweenStatic';
-import { ThesisText } from './ThesisText';
 import fragmentSource from './shaders/between.frag?raw';
 import vertexSource from './shaders/fullscreen.vert?raw';
 
-/** Frame time above which the session is genuinely struggling, in milliseconds. */
 const STRUGGLE_MS = 24;
 const WATCHDOG_WINDOW = 60;
 const MAX_DPR_STEPS = 2;
@@ -44,20 +43,25 @@ export function TheBetween({ tier, timeline }: BeatComponentProps) {
     const observer = new ResizeObserver(resize);
     observer.observe(canvas);
 
-    const uniforms: Record<string, number | readonly number[]> = {
+    const uniforms: Record<string, number | readonly number[] | Float32Array> = {
       uResolution: renderer.drawingBufferSize,
       uTime: 0,
-      uApproach: 0,
-      uGoldSeam: 0,
-      uGoldAura: 0,
-      uPresence: 1,
-      uTail: 0,
-      uFlash: 0,
       uFade: 0,
-      uStillness: 0,
+      uGold: 0,
       uQuality: tier === 'full' ? 1 : 0,
-      uHalfGapFar: HALF_GAP_FAR,
-      uHalfGapNear: HALF_GAP_NEAR,
+      uParsaPos: [0, 0],
+      uSabaPos: [0, 0],
+      uGoldPos: [0, 0],
+      uParsaSize: 0,
+      uSabaSize: 0,
+      uParsaBright: 0,
+      uSabaBright: 0,
+      uTrailLenP: 0,
+      uTrailLenS: 0,
+      uBondLen: 0,
+      uParsaTrail: new Float32Array(48),
+      uSabaTrail: new Float32Array(48),
+      uBondTrail: new Float32Array(64),
       uObsidian: asVec3(palette.obsidian),
       uParsaDeep: asVec3(palette.parsaDeep),
       uParsaCore: asVec3(palette.parsaCore),
@@ -68,23 +72,33 @@ export function TheBetween({ tier, timeline }: BeatComponentProps) {
       uGoldHigh: asVec3(palette.goldHigh),
     };
 
-    const unsubscribe = timeline.subscribe(({ progress, elapsed, stillness, dt }) => {
-      const envelope = envelopeAt(progress);
+    const unsubscribe = timeline.subscribe(({ progress, elapsed, dt, awakened }) => {
+      if (import.meta.env.DEV) {
+        document.documentElement.dataset.progress = progress.toFixed(3);
+        document.documentElement.dataset.awakened = awakened ? '1' : '0';
+      }
+
+      const state = awakened ? stateAt(progress) : stateAt(0);
 
       uniforms.uTime = elapsed;
-      uniforms.uApproach = envelope.approach;
-      uniforms.uGoldSeam = envelope.goldSeam;
-      uniforms.uGoldAura = envelope.goldAura;
-      uniforms.uPresence = envelope.presence;
-      uniforms.uTail = envelope.tail;
-      uniforms.uFlash = envelope.flash;
-      uniforms.uFade = envelope.fade;
-      uniforms.uStillness = stillness;
+      uniforms.uFade = awakened ? state.fade : 0;
+      uniforms.uGold = state.gold;
+      uniforms.uParsaPos = [state.parsa.pos.x, state.parsa.pos.y];
+      uniforms.uSabaPos = [state.saba.pos.x, state.saba.pos.y];
+      uniforms.uGoldPos = [state.goldPos.x, state.goldPos.y];
+      uniforms.uParsaSize = state.parsa.size;
+      uniforms.uSabaSize = state.saba.size;
+      uniforms.uParsaBright = state.parsa.bright;
+      uniforms.uSabaBright = state.saba.bright;
+      uniforms.uTrailLenP = state.parsa.trailLen;
+      uniforms.uTrailLenS = state.saba.trailLen;
+      uniforms.uBondLen = state.bondLen;
+      uniforms.uParsaTrail = state.parsa.trail;
+      uniforms.uSabaTrail = state.saba.trail;
+      uniforms.uBondTrail = state.bond;
 
       renderer.render(uniforms);
 
-      // Resolution may drop, but the tier never does: a visible downgrade during the
-      // Signature Moment is worse than a few dropped frames (TECHNICAL_ARCHITECTURE §7).
       if (dprSteps >= MAX_DPR_STEPS || dpr <= 1) return;
       accumulated += dt * 1000;
       if (++frames < WATCHDOG_WINDOW) return;
@@ -109,7 +123,7 @@ export function TheBetween({ tier, timeline }: BeatComponentProps) {
   return (
     <div className="between">
       <canvas className="between__canvas" ref={canvasRef} aria-hidden="true" />
-      <ThesisText timeline={timeline} />
+      <PresenceNames timeline={timeline} />
     </div>
   );
 }

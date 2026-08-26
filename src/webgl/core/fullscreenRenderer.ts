@@ -7,7 +7,7 @@
  * introduce a library at that point (see D-015).
  */
 
-export type UniformValue = number | readonly number[];
+export type UniformValue = number | readonly number[] | Float32Array;
 
 export interface FullscreenRenderer {
   render(uniforms: Readonly<Record<string, UniformValue>>): void;
@@ -97,9 +97,14 @@ export function createFullscreenRenderer(
       if (lost) return;
       gl.useProgram(program);
       for (const name in uniforms) {
+        const value = uniforms[name]!;
+        if (value instanceof Float32Array) {
+          const arrayLoc = locate(`${name}[0]`) ?? locate(name);
+          if (arrayLoc) gl.uniform2fv(arrayLoc, value);
+          continue;
+        }
         const location = locate(name);
         if (!location) continue;
-        const value = uniforms[name]!;
         if (typeof value === 'number') {
           gl.uniform1f(location, value);
         } else if (value.length === 2) {

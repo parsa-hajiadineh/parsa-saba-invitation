@@ -1,104 +1,229 @@
 /**
- * BEAT 2 — میانِ ما / The Between. Tuning constants and the beat's timeline.
+ * BEAT 2 — میانِ ما / The Between.
  *
- * Everything about the pacing of this beat is here. The shader receives finished
- * envelope values rather than deriving them from progress, so this file is the
- * single place the moment is timed, and per-pixel work stays cheap.
- *
- * Spec: CREATIVE_LOCK.md §4, Beat 2.
+ * The whole cinematic is authored here as two independent trajectories, a bond
+ * that is a consequence of their meeting, and envelopes for ignition / gold / names.
+ * The shader only draws what this file has already decided.
  */
 
-/**
- * Viewport heights of scroll the beat occupies, and how heavily the timeline lags
- * the finger. Together these two numbers are the pacing of the Signature Moment,
- * and they are the first thing to tune on a real phone: a flick covers far more
- * ground than a deliberate drag, so the drag is what makes a fast gesture resolve
- * slowly instead of skipping the moment.
- */
-export const SCROLL_VIEWPORTS = 8.2;
-export const SCROLL_SMOOTHING = 3.5;
+export const SCROLL_VIEWPORTS = 7.4;
+export const SCROLL_SMOOTHING = 3.2;
+export const ESTIMATED_DURATION_SECONDS = 34;
 
-/**
- * CREATIVE_LOCK.md §4 gives a provisional 28–35s for this beat, with the bond tail
- * as its final 8–10s. Holding both of those and still letting «ولی برای هم.» rest
- * on screen needs a little more room, so the estimate sits just past the band. §3
- * permits per-beat tuning while the 90–150s total holds, and it does. The number is
- * an estimate at a natural scroll rate, not a fixed duration — the guest decides.
- */
-export const ESTIMATED_DURATION_SECONDS = 36;
+export const TRAIL_COUNT = 24;
+export const BOND_COUNT = 32;
 
-/**
- * Half the vertical distance between the two presences, in units where the
- * viewport is 1.0 tall. NEAR is a floor, not a suggestion: the two presences
- * approach and stop. They never reach each other and they never merge (L-25).
- */
-export const HALF_GAP_FAR = 0.46;
-export const HALF_GAP_NEAR = 0.205;
+export interface Vec2 {
+  x: number;
+  y: number;
+}
 
-/**
- * Phase boundaries in normalised beat progress.
- *
- * The order matters more than the numbers. Gold arrives as a brief, precise event —
- * a filament at the midline, at the exact moment the two presences stop closing —
- * and then softens into the broad field the thesis is read inside. The seam is gone
- * before the first line appears: a bright horizontal rule behind text reads as a
- * divider on a wedding card, which is the one thing this moment cannot be.
- */
-const PHASE = {
-  fadeIn: [0.0, 0.02],
-  approach: [0.05, 0.36],
-  seamIn: [0.275, 0.375],
-  seamOut: [0.385, 0.445],
-  auraIn: [0.365, 0.465],
-  auraOut: [0.8, 0.885],
-  tail: [0.785, 1.0],
-  presenceDim: [0.785, 0.855],
-  fadeOut: [0.965, 1.0],
-} as const;
+export interface PresenceState {
+  pos: Vec2;
+  size: number;
+  bright: number;
+  trail: Float32Array;
+  trailLen: number;
+}
 
-/** Where the bond flash sits inside the tail's own 0..1 progress. */
-const FLASH = [0.5, 0.575, 0.6, 0.76] as const;
-
-/** How far the presences dim during the bond tail, so the arcs can be read. */
-const PRESENCE_TAIL_LEVEL = 0.4;
-
-export interface BetweenEnvelope {
-  /** 0 = far apart, 1 = at the closest they ever come. */
-  approach: number;
-  /** The thin gold filament at the midline. */
-  goldSeam: number;
-  /** The broad warm glow the thesis is read inside. */
-  goldAura: number;
-  /** Brightness multiplier for both presences. */
-  presence: number;
-  /** The bond tail's own 0..1 progress. */
-  tail: number;
-  /** The single controlled flash at the tangential touch. */
-  flash: number;
-  /** Master fade, covering entry and dissolve. */
+export interface BetweenState {
+  parsa: PresenceState;
+  saba: PresenceState;
+  bond: Float32Array;
+  bondLen: number;
+  gold: number;
+  goldPos: Vec2;
+  names: number;
   fade: number;
 }
 
-export function envelopeAt(progress: number): BetweenEnvelope {
-  const approach = ease(span(progress, PHASE.approach));
-  const tail = span(progress, PHASE.tail);
+/**
+ * Parsa — few waypoints, long deliberate arcs. He does not wander.
+ * Screen fractions, origin at centre, +y up.
+ */
+const PARSA_WAYPOINTS: readonly Vec2[] = [
+  { x: -0.40, y: 0.40 },
+  { x: -0.47, y: 0.17 },
+  { x: -0.22, y: 0.27 },
+  { x: 0.05, y: 0.15 },
+  { x: -0.16, y: 0.07 },
+  { x: -0.086, y: 0.03 },
+];
+
+/**
+ * Saba — more waypoints, a loop that is hers alone. She is not his mirror.
+ */
+const SABA_WAYPOINTS: readonly Vec2[] = [
+  { x: 0.43, y: -0.42 },
+  { x: 0.34, y: -0.20 },
+  { x: 0.06, y: -0.31 },
+  { x: 0.24, y: 0.10 },
+  { x: 0.08, y: 0.16 },
+  { x: 0.20, y: -0.02 },
+  { x: 0.094, y: -0.034 },
+];
+
+export function stateAt(progress: number): BetweenState {
+  const p = clamp01(progress);
+  const ignite = span(p, 0.0, 0.08);
+  const pathT = span(p, 0.05, 0.76);
+  const settle = span(p, 0.72, 0.88);
+  const bondAmt = span(p, 0.66, 0.84);
+  const gold = span(p, 0.74, 0.88) * (1 - span(p, 0.96, 1) * 0.25);
+  const names = span(p, 0.84, 0.93);
+
+  const parsaPos = displace(pathThrough(PARSA_WAYPOINTS, pathT), pathT, 0.0035, 2.1, 0.4);
+  const sabaPos = displace(pathThrough(SABA_WAYPOINTS, pathT), pathT, 0.021, 3.4, 1.1);
+
+  const parsaDepth = 0.22 + 0.78 * ease(pathT);
+  const sabaDepth = 0.16 + 0.84 * ease(pathT);
+
+  const parsa: PresenceState = {
+    pos: parsaPos,
+    size: 0.0055 + 0.012 * parsaDepth,
+    bright: ignite * (0.75 + 0.45 * parsaDepth),
+    trail: new Float32Array(TRAIL_COUNT * 2),
+    trailLen: 0,
+  };
+  const saba: PresenceState = {
+    pos: sabaPos,
+    size: 0.0065 + 0.014 * sabaDepth,
+    bright: ignite * (0.7 + 0.5 * sabaDepth),
+    trail: new Float32Array(TRAIL_COUNT * 2),
+    trailLen: 0,
+  };
+
+  fillTrail(
+    parsa.trail,
+    (t) => displace(pathThrough(PARSA_WAYPOINTS, t), t, 0.0035, 2.1, 0.4),
+    pathT * settle * 0.85,
+    Math.max(pathT, 0.001),
+  );
+  fillTrail(
+    saba.trail,
+    (t) => displace(pathThrough(SABA_WAYPOINTS, t), t, 0.021, 3.4, 1.1),
+    pathT * settle * 0.85,
+    Math.max(pathT, 0.001),
+  );
+  parsa.trailLen = pathT < 0.03 ? 0 : TRAIL_COUNT;
+  saba.trailLen = pathT < 0.03 ? 0 : TRAIL_COUNT;
+
+  const bond = sampleBond(parsaPos, sabaPos, bondAmt);
+
+  const goldIndex = Math.max(0, Math.min(BOND_COUNT - 1, Math.round((bond.len - 1) * 0.62)));
+  const goldPos: Vec2 = {
+    x: bond.points[goldIndex * 2] ?? 0,
+    y: bond.points[goldIndex * 2 + 1] ?? 0,
+  };
 
   return {
-    approach,
-    goldSeam: span(progress, PHASE.seamIn) * (1 - span(progress, PHASE.seamOut)),
-    goldAura: span(progress, PHASE.auraIn) * (1 - span(progress, PHASE.auraOut)),
-    presence: 1 - (1 - PRESENCE_TAIL_LEVEL) * span(progress, PHASE.presenceDim),
-    tail,
-    flash: span(tail, [FLASH[0], FLASH[1]]) * (1 - span(tail, [FLASH[2], FLASH[3]])),
-    fade: span(progress, PHASE.fadeIn) * (1 - span(progress, PHASE.fadeOut)),
+    parsa,
+    saba,
+    bond: bond.points,
+    bondLen: bond.len,
+    gold: gold * ignite,
+    goldPos,
+    names: names * ignite,
+    fade: ignite,
   };
 }
 
-function span(x: number, [a, b]: readonly [number, number]): number {
+function fillTrail(out: Float32Array, at: (t: number) => Vec2, from: number, to: number): void {
+  const n = TRAIL_COUNT;
+  for (let i = 0; i < n; i++) {
+    const t = from + (to - from) * (i / (n - 1));
+    const p = at(t);
+    out[i * 2] = p.x;
+    out[i * 2 + 1] = p.y;
+  }
+}
+
+function sampleBond(parsa: Vec2, saba: Vec2, amount: number): { points: Float32Array; len: number } {
+  const points = new Float32Array(BOND_COUNT * 2);
+  if (amount <= 0.001) return { points, len: 0 };
+
+  const cx = parsa.x * 0.46 + saba.x * 0.54 + 0.01;
+  const cy = parsa.y * 0.56 + saba.y * 0.44 - 0.006;
+  const dx = saba.x - parsa.x;
+  const dy = saba.y - parsa.y;
+  const dist = Math.hypot(dx, dy);
+  const rx = dist * 0.92 + 0.018;
+  const ry = dist * 0.5 + 0.01;
+  // Twist off the joining line so this cannot close into a ring on their axis.
+  const rot = Math.atan2(dy, dx) + 0.62;
+  const cos = Math.cos(rot);
+  const sin = Math.sin(rot);
+  const arc = amount * Math.PI * 1.62;
+  const a0 = -0.42;
+  const len = Math.max(2, Math.round(amount * (BOND_COUNT - 1)));
+
+  for (let i = 0; i < BOND_COUNT; i++) {
+    const a = a0 + (i / (BOND_COUNT - 1)) * arc;
+    const ex = Math.cos(a) * rx;
+    const ey = Math.sin(a) * ry;
+    points[i * 2] = cx + ex * cos - ey * sin;
+    points[i * 2 + 1] = cy + ex * sin + ey * cos;
+  }
+  return { points, len };
+}
+
+function pathThrough(points: readonly Vec2[], t: number): Vec2 {
+  const n = points.length - 1;
+  const x = clamp01(t) * n;
+  const i = Math.min(Math.floor(x), n - 1);
+  const f = x - i;
+  const p0 = points[Math.max(0, i - 1)]!;
+  const p1 = points[i]!;
+  const p2 = points[i + 1]!;
+  const p3 = points[Math.min(points.length - 1, i + 2)]!;
+  return catmullRom(p0, p1, p2, p3, f);
+}
+
+function catmullRom(p0: Vec2, p1: Vec2, p2: Vec2, p3: Vec2, t: number): Vec2 {
+  const t2 = t * t;
+  const t3 = t2 * t;
+  return {
+    x:
+      0.5 *
+      (2 * p1.x +
+        (-p0.x + p2.x) * t +
+        (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
+        (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3),
+    y:
+      0.5 *
+      (2 * p1.y +
+        (-p0.y + p2.y) * t +
+        (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
+        (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3),
+  };
+}
+
+function displace(p: Vec2, t: number, amp: number, freq: number, phase: number): Vec2 {
+  const envelope = Math.sin(t * Math.PI) * (1 - span(t, 0.72, 1));
+  const a = amp * envelope;
+  return {
+    x: p.x + Math.sin(t * Math.PI * freq + phase) * a,
+    y: p.y + Math.cos(t * Math.PI * (freq * 0.73) + phase * 1.4) * a * 0.65,
+  };
+}
+
+function span(x: number, a: number, b: number): number {
   const t = (x - a) / (b - a);
   return t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
 }
 
 function ease(x: number): number {
   return x * x * (3 - 2 * x);
+}
+
+function clamp01(v: number): number {
+  return v < 0 ? 0 : v > 1 ? 1 : v;
+}
+
+/** CSS % from centre for a q-space point. */
+export function toCss(pos: Vec2): { left: string; top: string } {
+  return {
+    left: `${((pos.x + 0.5) * 100).toFixed(2)}%`,
+    top: `${((0.5 - pos.y) * 100).toFixed(2)}%`,
+  };
 }
