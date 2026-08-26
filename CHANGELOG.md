@@ -36,6 +36,54 @@
 
 ---
 
+## 2026-08-26 — Phase 5: quality pass on the Beat 2 prototype
+**Phase at end of session:** 5 in progress (5.1–5.6 built · 5.7 not done)
+
+### Changed
+- Brought the two presences closer at rest (`HALF_GAP_NEAR` 0.255 → 0.205) so the gap reads as a held breath rather than a poster
+- Bond tail: a single off-centre flash; arcs recede at the meeting so they cannot read as an S-flourish
+- Parsa tighter and more contained; Saba more fluid; gold aura behind the thesis reduced
+- Stage uses `100svh` so the canvas is less likely to jump with the mobile address bar
+- Thesis weight 300 → 350 for outdoor legibility, still light
+
+### Decided
+- D-018: held-breath gap; bond as a single off-centre flash
+
+### Fixed
+- Document contradictions: `PROJECT.md` §8 still said Phase 3 / no code; `ROADMAP.md` Phase 4 still said "WE ARE HERE" and Phase 5 still said NOT STARTED; O-04 still listed as blocking all implementation; this file had no Phase 5 entry even though D-015–D-017 existed
+
+### Not done
+- Step 5.7: never opened on a physical phone
+- No audio content (O-08)
+- O-01 / O-09 / O-11 remain open; values in the prototype are still provisional
+
+**Next step at time of writing:** Phase 5, Step 5.7 — open `npm run dev` on a real iPhone and make the go / no-go call.
+
+---
+
+## 2026-08-26 — Phase 5: first Beat 2 prototype (prior session, logged late)
+**Phase at end of session:** 5 in progress (5.1–5.6 built)
+
+This session produced D-015, D-016, and D-017 and the running prototype, but left no changelog entry. Recorded here so the next agent is not reconstructing from code alone.
+
+### Added
+- Vite + React + TypeScript scaffold
+- Scroll → normalised timeline orchestrator
+- Performance tiers: Full / Reduced / Static
+- Beat 2 WebGL shader (dual presences, gold-in-the-gap, bond tail)
+- Thesis typography in the DOM, three successive reveals
+- Gesture-armed audio unlock (no content yet)
+- Provisional tokens and Vazirmatn Variable
+
+### Decided
+- D-015: stack — Vite + React + TS, hand-written WebGL, no Three.js/GSAP/Zustand
+- D-016: prototype against provisional O-01 / O-09 / O-11
+- D-017: three thesis reveals; gold filament never coexists with the text
+
+**Next step at time of writing (then):** real-device review.
+
+---
+
 ## 2026-08-26 — Phase 3: project memory and Creative Lock v1.0
 **Phase at end of session:** 3 complete, 4 not started
 

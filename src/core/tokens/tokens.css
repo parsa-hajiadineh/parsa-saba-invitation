@@ -1,0 +1,14 @@
+:root {
+  --obsidian: #0a0a0b;
+  --text-primary: rgba(255, 246, 233, 0.94);
+  --gold-glow: rgba(212, 160, 76, 0.3);
+  --gold-glow-far: rgba(212, 160, 76, 0.15);
+  --violet-glow: rgba(126, 96, 255, 0.5);
+  --rose-glow: rgba(255, 150, 168, 0.5);
+
+  --ease-cinematic: cubic-bezier(0.33, 0, 0.2, 1);
+
+  /* PROVISIONAL typeface — O-09 is OPEN. Swap this one value when it is decided. */
+  --font-persian: 'Vazirmatn Variable', 'Vazirmatn', 'SF Arabic', 'Noto Naskh Arabic',
+    'Segoe UI', system-ui, sans-serif;
+}

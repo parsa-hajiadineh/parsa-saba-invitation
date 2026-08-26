@@ -1,0 +1,4 @@
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+  ➜  Local:   http://localhost:4173/
+  ➜  Network: http://172.18.0.1:4173/
+  ➜  Network: http://172.20.10.3:4173/

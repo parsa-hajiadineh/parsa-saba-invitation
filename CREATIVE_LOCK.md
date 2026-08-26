@@ -362,7 +362,6 @@ An agent must **not** invent answers to any of these. If work is blocked by one,
 | O-01 | **Final Persian wording and line breaks of the core thesis in Beat 2** | Beat 2 implementation |
 | O-02 | **Event details: date, time, venue, address, dress code** — not yet supplied | Beat 5 |
 | O-03 | **The photographs themselves** — not yet supplied | Beats 3, 4 |
-| O-04 | Final stack choice (Vite vs Next.js, R3F vs raw WebGL) | Phase 5 start |
 | O-05 | Backend for RSVP (Google Apps Script vs serverless vs other) | Beat 7 |
 | O-06 | Hosting, domain, and QR target URL | Deployment |
 | O-07 | Whether the Afterglow field shows **real** guest messages live, and if so how moderation works | Beat 6 |
@@ -374,6 +373,12 @@ An agent must **not** invent answers to any of these. If work is blocked by one,
 | O-13 | Analytics: whether any is used, and privacy stance | Architecture |
 | O-14 | Post-RSVP state: can a guest return, re-enter, or edit? | Beat 7 |
 | O-15 | Copy for Beat 4 and Beat 6 | Beats 4, 6 |
+
+**Resolved:** O-04 (stack) → `DECISIONS.md` D-015.
+
+**O-01, O-09, and O-11 are still open even though the Beat 2 prototype now exists.** It
+was built against provisional values on the owner's instruction — see D-016. The
+prototype is not an approval of its wording, its colours, or its typeface.
 
 ---
 

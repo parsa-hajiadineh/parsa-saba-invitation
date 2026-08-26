@@ -2,7 +2,8 @@
 
 > **AUTHORITY RANK 3.**
 > Technical decisions. Subordinate to `CREATIVE_DNA.md` and `CREATIVE_LOCK.md`.
-> **Status: PROPOSED, not yet approved.** No stack has been installed. See §12 for what must be approved before implementation begins.
+> **Status: ACTIVE.** The stack is decided (**D-015**) and installed, and the Beat 2
+> prototype is built against it. Sections marked OPEN below are still open.
 
 ---
 
@@ -17,21 +18,39 @@
 
 ---
 
-## 2. Proposed stack
+## 2. Stack
 
-| Layer | Proposal | Rationale | Status |
-|---|---|---|---|
-| Language | **TypeScript** | Non-negotiable for multi-session maintainability | Recommended |
-| Framework | **React** | Beat modules map naturally to components; required by R3F | Recommended |
-| Build / host | **Vite + static hosting** *(alternative: Next.js static export)* | The site is a single page with one small write endpoint. Next.js adds routing/SSR we do not need. | **OPEN — O-04** |
-| Timeline / motion | **GSAP** (with ScrollTrigger) | Proven scroll-driven cinematic timelines on mobile Safari | Recommended |
-| 3D / WebGL | **Three.js via React Three Fiber**, mounted only for Beats 2, 3, 6, 7 | Component model matches beat isolation | **OPEN — O-04** |
-| Shaders | **GLSL**, hand-written, minimal | Gold-in-the-gap and light fields cannot be done convincingly in CSS | Recommended |
-| State | **Zustand** | Small global store: active beat, progress, tier, audio state, RSVP draft | Recommended |
-| Audio | **Web Audio API** (thin wrapper, or Howler if it earns its weight) | Stem-layer crossfades synced to beat progress | Recommended |
-| RSVP backend | Google Apps Script → Sheet, **or** a serverless function | Lightweight; low traffic; no user accounts | **OPEN — O-05** |
+Decided in **D-015**. Reasoning and rejected alternatives live there.
 
-**Deliberately excluded unless a concrete need appears:** a CSS framework, a component library, a state machine library, an animation library beyond GSAP, any analytics SDK, any font-loading service that blocks first paint.
+| Layer | Decision | Status |
+|---|---|---|
+| Language | **TypeScript**, strict | Installed |
+| Framework | **React** | Installed |
+| Build / host | **Vite** + static hosting | Installed |
+| Timeline / motion | **Hand-written**: scroll → normalised timeline → per-beat envelopes | Built |
+| WebGL | **Hand-written**, one fragment shader per light-based beat. No Three.js, no R3F. | Built |
+| Shaders | **GLSL ES 1.00**, hand-written, minimal | Built |
+| State | **None.** Per-frame progress is published imperatively; React never renders per frame. | Built |
+| Audio | **Web Audio API**, thin wrapper. Gesture unlock armed; no content yet. | Partial |
+| Typeface | **Vazirmatn Variable**, OFL-1.1, self-hosted — **provisional, see D-016** | Installed |
+| RSVP backend | Google Apps Script → Sheet, **or** a serverless function | **OPEN — O-05** |
+
+**Not installed, and each would need its own decision:** GSAP, Zustand, Three.js, React
+Three Fiber, a CSS framework, a component library, any analytics SDK, any font service
+that blocks first paint.
+
+Three.js is **deferred, not rejected.** Beats 3, 6, and 7 need instanced points and
+textures; if hand-written GL stops paying for itself there, it can be introduced and
+lazily loaded for those beats alone. The beat registry exists to make that a local change.
+
+### Actual payload, Beat 2 prototype
+
+| | Measured | Budget (§9) |
+|---|---|---|
+| JavaScript | 68 KB gzipped | — |
+| CSS | 2 KB gzipped | — |
+| Persian subset of the typeface | 46 KB woff2 | — |
+| **Total before first frame** | **~116 KB** | < 600 KB |
 
 ---
 
@@ -96,32 +115,34 @@ Dev affordance: `?beat=<id>` loads a single beat full-screen in isolation. `?tie
 
 ---
 
-## 5. Proposed project structure
+## 5. Project structure
+
+Directories marked *planned* do not exist yet. Only Beat 2 has been built.
 
 ```
 /                         # reference docs (this file and siblings)
 src/
-  app/                    # entry, single page composition
+  main.tsx                # entry: fonts, tokens, styles, mount
+  app/                    # single page composition, scroll surface
   core/
-    orchestrator/         # scroll → timeline → per-beat progress
-    audio/                # stem layers, gesture unlock, silent-safe fallback
+    orchestrator/         # scroll → normalised timeline; beat module contract
+    audio/                # gesture unlock; silent-safe by construction
     performance/          # capability detection, tier selection, DPR cap
-    tokens/               # colours, type scale, motion curves
+    tokens/               # colours and motion (provisional — O-11, O-09)
   beats/
-    01-threshold/
-    02-the-between/
-    03-constellation/
-    04-us-now/
-    05-invitation/
-    06-afterglow/
-    07-rsvp/
+    registry.ts           # the experience, as an ordered array
+    02-the-between/       # ★ built
+    01-threshold/         # planned
+    03-constellation/     # planned
+    04-us-now/            # planned
+    05-invitation/        # planned
+    06-afterglow/         # planned
+    07-rsvp/              # planned
   webgl/
-    shared/               # shared materials, post-processing, LUT
-  components/             # typography primitives, RSVP inputs
-  services/               # RSVP client
-public/
-  photos/                 # processed image derivatives
-  audio/                  # stems
+    core/                 # fullscreen shader renderer, shared by light-based beats
+  components/             # planned: typography primitives, RSVP inputs
+  services/               # planned: RSVP client
+public/                   # planned: processed photographs, audio stems
 ```
 
 ---
@@ -234,12 +255,17 @@ Two separate gates. Do not conflate them.
 
 ### Gate A — before the Phase 5 Signature prototype may start
 
-| Item | Why it blocks |
-|---|---|
-| **O-04** — Vite vs Next.js; R3F vs raw Three.js | Nothing can be scaffolded without it |
-| **O-01** — final Persian wording of the core thesis | Beat 2 *is* that text in the gap; prototyping it against placeholder wording tests the wrong thing |
-| **O-11** — design tokens (obsidian, violet, rose, gold) | The gold-in-the-gap shader is meaningless without the actual gold |
-| **O-09** — Persian typeface | The thesis typography must be evaluated in its real face, on a real phone |
+**Superseded by the owner on 2026-08-26.** The prototype was built with O-01, O-09, and
+O-11 still open, against provisional values — see **D-016**. Kept here because the
+reasoning still applies to *approval*: the prototype cannot be signed off as final until
+these three are decided and the real values are in place.
+
+| Item | Why it blocks | Status |
+|---|---|---|
+| **O-04** — Vite vs Next.js; R3F vs raw Three.js | Nothing can be scaffolded without it | **Resolved — D-015** |
+| **O-01** — final Persian wording of the core thesis | Beat 2 *is* that text in the gap; prototyping it against placeholder wording tests the wrong thing | Open; provisional in use |
+| **O-11** — design tokens (obsidian, violet, rose, gold) | The gold-in-the-gap shader is meaningless without the actual gold | Open; provisional in use |
+| **O-09** — Persian typeface | The thesis typography must be evaluated in its real face, on a real phone | Open; provisional in use |
 
 ### Gate B — before full implementation (Phase 6 onward)
 
@@ -256,4 +282,4 @@ Gate B items do **not** block the Beat 2 prototype. Beats 3 and 4 may be built a
 
 ---
 
-_Last updated: 2026-08-26 · Status: PROPOSED_
+_Last updated: 2026-08-26 · Status: ACTIVE_

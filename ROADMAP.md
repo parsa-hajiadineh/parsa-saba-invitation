@@ -9,11 +9,15 @@
 ## CURRENT STATUS
 
 ```
-PHASE:        3 — Project Memory & Creative Lock        [COMPLETE]
-NEXT PHASE:   4 — Pre-production                        [NOT STARTED]
-CODE:         none written
-DEPENDENCIES: none installed
-BLOCKED ON:   Gate A — O-04, O-01, O-11, O-09 (see §Blockers)
+PHASE:        5 — Signature prototype                   [5.1–5.6 BUILT · 5.7 NOT DONE]
+CODE:         Beat 2 prototype runs. Orchestrator, tier system, three tier variants.
+DEPENDENCIES: react, react-dom, @fontsource-variable/vazirmatn (provisional)
+              dev only: vite, typescript, @vitejs/plugin-react, type packages
+DECIDED:      O-04 → D-015 (Vite + React + TS, hand-written WebGL)
+              D-018 — closer held-breath gap; bond as a single off-centre flash
+BLOCKED ON:   nothing, to keep reviewing Beat 2
+              O-01 / O-09 / O-11 before Beat 2 can be signed off as final
+              real-device review before Beat 2 can be called done at all
 ```
 
 **As of 2026-08-26.**
@@ -22,21 +26,26 @@ BLOCKED ON:   Gate A — O-04, O-01, O-11, O-09 (see §Blockers)
 
 ## THE NEXT STEP
 
-> **Phase 4, Step 4.1 — clear Gate A so the Signature prototype can begin.**
+> **Phase 5, Step 5.7 — open the prototype on a real phone and make the go / no-go call.**
 >
-> Gate A is the minimum set required before any code is written. It is defined in `TECHNICAL_ARCHITECTURE.md` §12:
+> Everything below this line is unverified until that happens. `DEVELOPMENT_RULES.md` §5
+> is explicit: a beat that looks correct in a phone-sized desktop viewport but has never
+> been opened on a physical phone is **not done**. What can only be learned there:
 >
-> 1. **O-04** — stack approval: Vite vs Next.js, React Three Fiber vs raw Three.js
-> 2. **O-01** — the final Persian wording and line breaks for the Beat 2 core thesis
-> 3. **O-11** — design tokens: the actual obsidian, violet, rose, and gold values
-> 4. **O-09** — Persian typeface selection
+> 1. **Does it feel right?** The go / no-go on the Signature Moment. Owner's call, on a phone.
+> 2. **Frame rate.** Never measured on real GPU hardware. Beat 2's budget is 60fps sustained.
+> 3. **Scroll feel.** `SCROLL_VIEWPORTS` and `SCROLL_SMOOTHING` in the beat's `config.ts`
+>    were chosen by reasoning, not by thumb. Momentum and touch latency cannot be emulated.
+> 4. **Outdoor legibility.** Thin light type on obsidian, in daylight, one-handed.
+> 5. **Safari's address bar** resizing the viewport mid-scroll.
 >
-> In parallel, and not blocking Gate A, the owner should begin collecting:
-> **O-02** event details · **O-03** the photographs · **O-08** music direction and budget
->
-> **No production code is written until all four Gate A items are resolved.**
+> In parallel, and not blocking: **O-01** the final wording · **O-11** colour tokens ·
+> **O-09** typeface · and Gate B collection — **O-02** event details · **O-03** photographs ·
+> **O-08** music.
 
-The first thing to be built once approved is **not** Beat 1. It is the **orchestrator skeleton plus a Beat 2 prototype**, because Beat 2 is the Signature Moment and carries all the technical and creative risk. If Beat 2 cannot be made to feel right, the entire structure must be reconsidered — and that must be discovered in week one, not week four.
+Beat 2 was built before Beat 1 deliberately (**D-012**): it carries all the concentrated
+risk, so if it cannot be made to feel right the structure must be reconsidered now rather
+than in week four. That question is still open until step 5.7 happens on a phone.
 
 ---
 
@@ -54,14 +63,15 @@ Experience rebuilt from 11 scenes to 7 beats. Signature Moment identified and se
 
 Eight reference documents created. Source-of-truth hierarchy established. Creative Lock v1.0 recorded.
 
-### Phase 4 — Pre-production · NOT STARTED ← **WE ARE HERE**
+### Phase 4 — Pre-production · PARTIAL
 
-**Exit criteria for moving to Phase 5:** Gate A cleared (O-04, O-01, O-11, O-09).
-**Exit criteria for completing Phase 4:** Gate B also cleared and all assets in hand.
+**Status:** The owner instructed Phase 5 to begin with Gate A incomplete (**D-016**). O-04 is resolved. O-01, O-11, and O-09 remain open and are prototyped against provisional values. Gate B is untouched.
+
+**Exit criteria for completing Phase 4:** remaining Gate A items decided, Gate B cleared, and all assets in hand. This no longer blocks the Beat 2 prototype.
 
 | Step | Work | Gate | Depends on |
 |---|---|---|---|
-| 4.1 | Stack approval — Vite vs Next.js, R3F vs raw Three.js (O-04) | **A** | Owner |
+| 4.1 | Stack approval — Vite vs Next.js, R3F vs raw Three.js (O-04) | **A** | **Done — D-015** |
 | 4.2 | Final Persian wording of the core thesis (O-01) | **A** | Owner |
 | 4.3 | Design tokens: obsidian, violet, rose, gold, type scale, easing (O-11) | **A** | Agent proposal → owner |
 | 4.4 | Select and license typefaces; verify Persian glyph coverage (O-09) | **A** | Agent proposal → owner |
@@ -73,20 +83,20 @@ Eight reference documents created. Source-of-truth hierarchy established. Creati
 
 Steps 4.5–4.9 run **in parallel** with Phase 5. They do not block the prototype.
 
-### Phase 5 — Signature prototype · NOT STARTED
+### Phase 5 — Signature prototype · IN PROGRESS
 
-**Entry criteria:** Gate A cleared. **This is the first phase in which code is written.**
+**Entry criteria:** originally Gate A cleared. Started under **D-016** with O-01 / O-09 / O-11 still open.
 **Exit criteria:** Beat 2 runs at 60fps on a real iPhone and is judged emotionally correct by the owner, on a phone.
 
-| Step | Work |
-|---|---|
-| 5.1 | Project scaffold, TypeScript, chosen build tool |
-| 5.2 | Orchestrator skeleton: scroll → normalised timeline → per-beat progress |
-| 5.3 | Performance tier detection |
-| 5.4 | **Beat 2 prototype** — dual light fields, gold-in-the-gap shader |
-| 5.5 | Core thesis typography in the gap, Persian, RTL, real device |
-| 5.6 | Bond tail (asymmetric arcs, off-centre touch) |
-| 5.7 | Real-device review; go / no-go on the Signature Moment |
+| Step | Work | Status |
+|---|---|---|
+| 5.1 | Project scaffold, TypeScript, chosen build tool | Done |
+| 5.2 | Orchestrator skeleton: scroll → normalised timeline → per-beat progress | Done |
+| 5.3 | Performance tier detection | Done |
+| 5.4 | **Beat 2 prototype** — dual light fields, gold-in-the-gap shader | Done |
+| 5.5 | Core thesis typography in the gap, Persian, RTL | Done on desktop; **real device is 5.7** |
+| 5.6 | Bond tail (asymmetric arcs, off-centre touch) | Done |
+| 5.7 | Real-device review; go / no-go on the Signature Moment | **Not done** |
 
 **This is the project's highest-risk gate.** Everything after it is comparatively routine.
 
@@ -125,10 +135,10 @@ Monitor submissions. If the Afterglow field shows live guest messages, watch mod
 
 | ID | Blocker | Gate | Blocks | Owner |
 |---|---|---|---|---|
-| O-04 | Stack approval | **A** | All implementation | Parsa |
-| O-01 | Final Persian wording of the core thesis | **A** | Beat 2 | Parsa |
-| O-11 | Design tokens | **A** | All visual work | Agent proposal → owner |
-| O-09 | Typefaces and licensing | **A** | Design tokens, all typography | Agent proposal → owner |
+| O-04 | Stack approval | **A** | ~~All implementation~~ | **Resolved — D-015** |
+| O-01 | Final Persian wording of the core thesis | **A** | Beat 2 sign-off (not the prototype itself) | Parsa |
+| O-11 | Design tokens | **A** | Beat 2 sign-off (provisional values in use) | Agent proposal → owner |
+| O-09 | Typefaces and licensing | **A** | Beat 2 sign-off (Vazirmatn is provisional) | Agent proposal → owner |
 | O-02 | Event details (date, time, venue) | B | Beat 5, launch | Parsa |
 | O-03 | The photographs | B | Beats 3 and 4 | Parsa |
 | O-05 | RSVP backend choice | B | Beat 7 | Parsa |
@@ -136,7 +146,7 @@ Monitor submissions. If the Afterglow field shows live guest messages, watch mod
 | O-07 | Live guest messages + moderation policy | B | Beat 6 | Parsa |
 | O-08 | Music sourcing and budget | B | Audio, pacing | Parsa |
 
-Gate A blocks the start of Phase 5. Gate B blocks Phase 6 onward. Definitions: `TECHNICAL_ARCHITECTURE.md` §12.
+Gate A no longer blocks the Beat 2 prototype (**D-016**). O-01 / O-09 / O-11 still block treating Beat 2 as final. Gate B blocks Phase 6 onward. Definitions: `TECHNICAL_ARCHITECTURE.md` §12.
 
 Full list including non-blocking open items: `CREATIVE_LOCK.md` §9.
 

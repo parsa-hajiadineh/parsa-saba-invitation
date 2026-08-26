@@ -204,9 +204,153 @@
 
 ---
 
+## D-015 — Stack: Vite + React + TypeScript, with hand-written WebGL instead of Three.js/R3F
+**Date:** 2026-08-26 · **Type:** Technical · **Status:** Active · **Decided by:** Agent, on the owner's explicit instruction to choose the best stack for Beat 2's real needs
+
+**Decision:** Resolves **O-04**. The build is **Vite + React + TypeScript (strict)**. The
+Signature Moment renders through a small hand-written **WebGL** layer — one fragment
+shader on one fullscreen triangle — rather than Three.js via React Three Fiber. GSAP and
+Zustand are **not** installed.
+
+**Reasoning:**
+
+- *Vite over Next.js:* the piece is a single page with, eventually, one small write
+  endpoint. Next.js contributes routing and rendering strategies that would go unused.
+- *Raw WebGL over Three.js/R3F for this beat:* Beat 2 has no geometry, no camera, no
+  lights, and no scene graph. It is two analytic light fields, a product term, and two
+  arcs — all in one fragment shader. Three.js would add roughly 170 KB gzipped to serve
+  none of that, against a 600 KB initial budget, and `TECHNICAL_ARCHITECTURE.md` §1 says
+  to choose the lightest technology that produces the intended effect. The result is
+  ~68 KB gzipped of JavaScript for the entire prototype.
+- *No GSAP:* scroll drives a normalised timeline that beats read as progress. That is an
+  exponential smoothing step and a set of envelope functions — around eighty lines,
+  fully under our control. ScrollTrigger is built for animating documents, and this is
+  explicitly not a document.
+- *No Zustand:* per-frame progress must never pass through React state or the Signature
+  Moment re-renders sixty times a second. The timeline is an imperative publisher and
+  subscribers write to the canvas and to DOM styles directly.
+
+**Alternatives rejected:**
+
+- *Next.js static export* — no requirement it satisfies that Vite does not.
+- *Three.js + R3F now* — cost with no return at this beat. Explicitly **not** ruled out
+  later: Beats 3, 6, and 7 need instanced points and textures, and if hand-written GL
+  stops paying for itself there, Three.js can be introduced and lazily loaded for those
+  beats without touching this one. The beat registry exists so that is a local change.
+- *Dropping React* — tempting at this size, but `TECHNICAL_ARCHITECTURE.md` §2 recommends
+  it and later beats (RSVP inputs, the invitation's typography) genuinely want a
+  component model. Removing it would be a deviation with no urgency behind it.
+
+**Consequences:** `TECHNICAL_ARCHITECTURE.md` §2 updated and its status moved from
+PROPOSED to ACTIVE. **O-04 removed from `CREATIVE_LOCK.md` §9.** Three dependencies
+ship: `react`, `react-dom`, and a provisional typeface (D-016). If a later beat needs
+Three.js, that is a new decision, not an assumption.
+
+---
+
+## D-016 — Beat 2 prototyped against provisional wording, tokens, and typeface
+**Date:** 2026-08-26 · **Type:** Process · **Status:** Active · **Decided by:** Agent, on the owner's explicit instruction to begin Phase 5
+
+**Decision:** The Signature prototype was built with **O-01, O-11, and O-09 still open**,
+using clearly-marked provisional values, each isolated to a single file so that resolving
+the open item is a one-file change:
+
+| Open item | Provisional value | Lives in |
+|---|---|---|
+| O-01 thesis wording | quoted verbatim from `CREATIVE_DNA.md` §6 | `src/beats/02-the-between/copy.ts` |
+| O-11 colour tokens | obsidian `#0A0A0B`, violet, rose-pearl, three-step gold ramp | `src/core/tokens/tokens.ts` |
+| O-09 typeface | Vazirmatn Variable, OFL-1.1, self-hosted, subset-gated | `src/core/tokens/tokens.css` |
+
+**Reasoning:** `TECHNICAL_ARCHITECTURE.md` §12 makes all four Gate A items prerequisites
+for this phase, and argues specifically that prototyping Beat 2 against placeholder
+wording "tests the wrong thing". The owner instructed the agent to proceed and to use the
+provisional wording. That instruction is the owner exercising final creative authority,
+which outranks the gate. Recording it here rather than quietly relaxing the gate.
+
+The typeface is the weakest part of this. O-09 asks for a *selection and licensing*
+decision; Vazirmatn is a defensible provisional choice — free, OFL, self-hosted, real
+Persian design, light weights available — but it was chosen by an agent for the sake of
+having something credible to judge the typography against, not selected on merit against
+alternatives. **It is not a resolution of O-09.**
+
+**Alternatives rejected:** Stopping and reporting Gate A as a blocker — the owner had
+already answered that. A system font stack — Persian system faces vary enough between iOS,
+Android, and Windows that the owner would have been judging a different typeface on every
+device he tested.
+
+**Consequences:** O-01, O-09, and O-11 remain **OPEN** in `CREATIVE_LOCK.md` §9. The
+prototype must not be treated as a typography or colour approval. Whatever the owner
+decides for these three, none of them requires touching render code.
+
+---
+
+## D-017 — Beat 2's internal timing restructured; the thesis is delivered in three reveals
+**Date:** 2026-08-26 · **Type:** Creative · **Status:** Active · **Decided by:** Agent, during implementation
+
+**Decision:** Two refinements to the Beat 2 working specification in `CREATIVE_LOCK.md` §4,
+both within the "internal execution details may be refined during implementation" latitude
+that section grants:
+
+1. The thesis is revealed as **three successive reveals** (2 lines, 1 line, 2 lines) with
+   earlier lines releasing, rather than five lines accumulating on screen.
+2. Gold's **filament and the text never coexist.** The seam forms as the presences stop
+   closing, then softens to almost nothing before the first line appears.
+
+**Reasoning:** Both were found by looking at the rendered frames, not by reasoning.
+
+The gap between two presences that never merge is narrow by definition. Five simultaneous
+lines need roughly twice that height, so the presences would have had to separate to make
+room — the composition serving the typography instead of the reverse.
+
+The second is more serious. With the seam still lit behind the text, the frame read as
+*text with a gold rule under it* — which is precisely the wedding-invitation divider the
+whole project exists to avoid. It failed the template test on sight.
+
+A consequence: the beat's estimated duration moves to ~36s, just past the provisional
+28–35s band, so that the bond tail keeps its specified 8–10s and «ولی برای هم.» still gets
+to rest on screen. §3 permits per-beat tuning while the 90–150s total holds, and it holds.
+
+**Consequences:** `CREATIVE_LOCK.md` §4 is unchanged — this is execution detail, not a
+lock change. If the owner wants all five lines held together, the gap must widen and the
+approach will read as less close; that is a real trade and his call.
+
+---
+
+## D-018 — Held-breath gap; bond as a single off-centre flash
+**Date:** 2026-08-26 · **Type:** Creative · **Status:** Active · **Decided by:** Agent, during quality review of the Beat 2 prototype
+
+**Decision:** Two execution refinements to Beat 2, within the same latitude as D-017:
+
+1. `HALF_GAP_NEAR` moves from 0.255 to 0.205 so the presences stop close enough that
+   the remaining space reads as a held breath, not as lights in a header and footer
+   with copy in the middle.
+2. The bond tail's flash becomes the event: arcs recede as a single off-centre point
+   ignites. They must not read as an S-flourish or as two tips connected by a curve.
+
+**Reasoning:** Reviewed on a 390×844 viewport. At 0.255 the composition failed the
+template test — two distant orbs with centred Persian type is a poster, which is the
+layout every wedding template already owns. The Signature Moment is *proximity without
+collapse*; that only reads if they have almost met.
+
+The previous bond read as two golden points joined by a wave. That is a decorative
+flourish, not "two asymmetric arcs touching tangentially." One point of light, off-centre,
+is the meeting.
+
+**Alternatives rejected:** Leaving the gap wide so five lines could someday fit — D-017
+already chose three successive reveals for that reason. Brightening the flash into a
+lens flare — that is an effect, not an event.
+
+**Consequences:** `CREATIVE_LOCK.md` §4 is unchanged. Tune `HALF_GAP_NEAR` in
+`src/beats/02-the-between/config.ts` if the owner wants them closer still or further
+apart. Do not lower it far enough that the cores overlap.
+
+---
+
 ## OPEN DECISIONS
 
-Items awaiting a decision are tracked in `CREATIVE_LOCK.md` §9 (**O-01** … **O-15**) and the blocking subset is listed in `ROADMAP.md`. When one is resolved, add a `D-xxx` entry here and remove it from the open list.
+Items awaiting a decision are tracked in `CREATIVE_LOCK.md` §9 and the blocking subset is listed in `ROADMAP.md`. When one is resolved, add a `D-xxx` entry here and remove it from the open list.
+
+**Resolved so far:** O-04 → D-015.
 
 ---
 

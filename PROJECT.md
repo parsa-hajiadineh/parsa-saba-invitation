@@ -131,15 +131,14 @@ Reading all eight takes a few minutes and is **required** before proposing or wr
 
 ## 8. Current phase
 
-**PHASE 3 — PROJECT MEMORY & CREATIVE LOCK — COMPLETE**
+**PHASE 5 — SIGNATURE PROTOTYPE — IN PROGRESS**
 
 - Phase 1 — Creative analysis and critique: complete
 - Phase 2 — Creative development, beat rebuild, Signature Moment: complete
 - Phase 3 — Reference documents / project memory: complete
-- Phase 4 — Pre-production (assets, copy lock, stack decision): **NOT STARTED — this is next**
-- Phases 5–10 — implementation through launch: **NOT STARTED**
-
-**No production code exists yet. No dependencies are installed. This is intentional.**
+- Phase 4 — Pre-production: **partial.** Stack (O-04) is decided (**D-015**). Remaining Gate A items — wording, tokens, typeface — are still open; the prototype uses provisional values (**D-016**). Gate B items are still open and do not block this phase.
+- Phase 5 — Beat 2 prototype **runs** (steps 5.1–5.6). Step 5.7, real-phone review, is **not done**.
+- Phases 6–10 — implementation of remaining beats through launch: **NOT STARTED**
 
 `ROADMAP.md` holds the authoritative phase definitions, current status, and the exact next step. If this summary and `ROADMAP.md` ever disagree, `ROADMAP.md` is correct.
 
@@ -147,7 +146,7 @@ Reading all eight takes a few minutes and is **required** before proposing or wr
 
 ## 9. What an agent must NOT do
 
-- Do **not** write production code until `ROADMAP.md` marks Phase 4 as complete **and** the project owner has explicitly approved starting Phase 5.
+- Do **not** write production code until `ROADMAP.md` marks Phase 4 as complete **and** the project owner has explicitly approved starting Phase 5. *(Phase 5 was started under **D-016**, with the owner's explicit instruction to proceed while O-01 / O-09 / O-11 remain open.)*
 - Do **not** install dependencies without an approved stack decision recorded in `DECISIONS.md`.
 - Do **not** invent photographs, event dates, venues, or guest names. These are supplied by the owner. If missing, say so and stop.
 - Do **not** override anything in `CREATIVE_DNA.md`. Ever.

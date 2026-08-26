@@ -1,0 +1,31 @@
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+  VITE v7.3.6  ready in 509 ms
+
+  ➜  Local:   http://localhost:5174/
+  ➜  Network: http://172.18.0.1:5174/
+  ➜  Network: http://172.20.10.3:5174/
+2:44:37 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:44:45 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:44:51 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:44:58 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:45:05 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:45:12 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetweenStatic.tsx
+2:47:00 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:47:07 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:47:13 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:47:19 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:47:26 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+2:48:57 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+3:07:08 AM [vite] (client) hmr update /src/app/App.tsx, /src/beats/02-the-between/TheBetween.tsx, /src/beats/02-the-between/TheBetweenStatic.tsx
+3:07:08 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+3:07:08 AM [vite] (client) hmr update /src/app/app.css
+3:07:08 AM [vite] (client) hmr update /src/beats/02-the-between/theBetween.css
+3:07:10 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+3:07:11 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+3:07:11 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+3:07:12 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+3:07:12 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+3:07:19 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx
+3:07:19 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetweenStatic.tsx
+3:10:54 AM [vite] (client) hmr update /src/beats/02-the-between/TheBetween.tsx

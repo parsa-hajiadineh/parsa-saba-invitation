@@ -1,0 +1,143 @@
+.between {
+  position: absolute;
+  inset: 0;
+}
+
+.between__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- the thesis, inside the gap ---- */
+
+.thesis {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.thesis__stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(86vw, 32rem);
+  margin: 0;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3em;
+  text-align: center;
+}
+
+.thesis__line {
+  display: block;
+  /* Persian is a joined script: letter-spacing would pull the glyphs apart.
+     Air comes from word-spacing and leading instead. */
+  font-family: var(--font-persian);
+  font-weight: 350;
+  font-size: clamp(1.4rem, 5.8vw, 1.95rem);
+  line-height: 1.75;
+  letter-spacing: 0;
+  word-spacing: 0.07em;
+  color: var(--text-primary);
+  text-shadow:
+    0 0 18px var(--gold-glow),
+    0 0 54px var(--gold-glow-far);
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity, transform;
+}
+
+/* ---- static tier: the same beat without WebGL ---- */
+
+.static-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.static-presence {
+  position: absolute;
+  left: -30%;
+  width: 160%;
+  height: 46%;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.static-presence--parsa {
+  top: -13%;
+  background: radial-gradient(
+    ellipse 40% 44% at 50% 50%,
+    rgba(126, 96, 255, 0.5),
+    rgba(58, 28, 142, 0.16) 46%,
+    transparent 72%
+  );
+}
+
+.static-presence--saba {
+  bottom: -13%;
+  background: radial-gradient(
+    ellipse 43% 46% at 50% 50%,
+    rgba(255, 196, 196, 0.46),
+    rgba(196, 68, 94, 0.15) 46%,
+    transparent 74%
+  );
+}
+
+.static-aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 78%;
+  height: 30%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(212, 160, 76, 0.34),
+    rgba(140, 92, 30, 0.1) 52%,
+    transparent 78%
+  );
+  will-change: opacity;
+}
+
+.static-seam {
+  position: absolute;
+  top: 50%;
+  left: 19%;
+  width: 62%;
+  height: 2px;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 160, 76, 0.55) 22%,
+    rgba(255, 242, 206, 0.85) 50%,
+    rgba(212, 160, 76, 0.55) 78%,
+    transparent
+  );
+  filter: blur(0.4px);
+  will-change: opacity, transform;
+}
+
+.static-bond {
+  position: absolute;
+  top: 46.5%;
+  left: 61.5%;
+  width: 34vw;
+  height: 34vw;
+  max-width: 190px;
+  max-height: 190px;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 246, 214, 0.9),
+    rgba(212, 160, 76, 0.28) 34%,
+    transparent 68%
+  );
+  will-change: opacity;
+}
